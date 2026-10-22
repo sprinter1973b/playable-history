@@ -1,4 +1,5 @@
-import json
+import json,os
+from tour_data import route as tour_route
 sky='<rect width="320" height="200" fill="#e9c98f"/><circle cx="260" cy="45" r="22" fill="#f6e2b0"/>'
 ground='<rect y="150" width="320" height="50" fill="#8a6a45"/>'
 rails='<rect y="168" width="320" height="4" fill="#3b2f2a"/><rect y="180" width="320" height="4" fill="#3b2f2a"/>'+''.join(f'<rect x="{x}" y="164" width="6" height="24" fill="#5a4030"/>' for x in range(0,320,20))
@@ -76,4 +77,10 @@ story={
   "history":["The 1912 depot still stands and is on the National Register of Historic Places, the only such listing in Woodstock. Main Street was paved in 1912. Woodstock grew from about 4,500 to about 36,000 residents over three decades."],"sources":["nrhp","pw","brochure","city125"]},
  "e_mill":{"title":"Ending: Cotton into Rope","image":"mill","text":["You become one of the experienced hands at the mill, teaching others the trade as owners come and go."],
   "history":["The last cotton mill on the site, Rope Mill (1928–1949), made rope for wells, plow lines and tents. Joe Johnston and Smith Johnston Sr. were its last owners. It closed in 1949 after the U.S. Government bought the property for Lake Allatoona. Ruins of the mill and history signs are in Olde Rope Mill Park today."],"sources":["brochure","city"]}}}
+# Full 25-stop walking tour (replaces the 5-stop route); keep photo info from add_photos.py
+old={}
+if os.path.exists('stories/woodstock.json'):
+    old={r['stop']:r.get('photo') for r in json.load(open('stories/woodstock.json')).get('route',[])}
+story['route']=tour_route()
+for r in story['route']: r['photo']=old.get(r['stop'])
 json.dump(story,open('stories/woodstock.json','w'),indent=1,ensure_ascii=False)

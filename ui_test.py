@@ -19,7 +19,16 @@ with sync_playwright() as p:
  assert pg.locator('.stop a').count()==1
  pg.click('#map');pg.wait_for_selector('.route');assert pg.locator('.route li').count()==len(S['route'])
  pg.screenshot(path='screenshot-map.png',full_page=True)
- pg.click('#back');pg.wait_for_selector('button[data-i]')
+ pg.click('#tourgo');pg.wait_for_selector('.quiz')
+ for k in range(len(S['route'])):
+  r=S['route'][k];assert ('Stop %d of'%r['stop']) in pg.inner_text('.top')
+  pg.click('button[data-q="%d"]'%r['quiz']['answer']);assert pg.inner_text('#qr')=='Correct!'
+  if k==16: pg.screenshot(path='screenshot-tour-stop.png',full_page=True)
+  assert pg.locator('.photo').count()==(1 if r.get('photo') else 0)
+  if k<len(S['route'])-1: pg.click('#next')
+ pg.click('#tl');pg.wait_for_selector('.route')
+ pg.click('a.open[data-s="17"]');pg.wait_for_selector('#play');pg.click('#play');pg.wait_for_selector('button[data-i]')
+ pg.click('#map');pg.wait_for_selector('#back');pg.click('#back');pg.wait_for_selector('button[data-i]')
  pg.click('#rs');assert pg.locator('#go').count()==1
  b.close()
-srv.kill();print(res,'errors:',errs)
+srv.kill();print(res,'errors:',errs);assert not errs
