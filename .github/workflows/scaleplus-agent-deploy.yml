@@ -1,0 +1,89 @@
+name: ScalePlus Agent Deploy
+run-name: Agent Deploy ${{ inputs.deployment_id }}
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_id:
+        required: true
+        type: string
+      commit:
+        required: true
+        type: string
+      root_directory:
+        required: false
+        default: ''
+        type: string
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ inputs.commit }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Build and package static website
+        env:
+          PROJECT_ROOT: ${{ inputs.root_directory }}
+          DEPLOYMENT_ID: ${{ inputs.deployment_id }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const crypto = require('node:crypto');
+          const {spawnSync} = require('node:child_process');
+          const workspace = fs.realpathSync(process.cwd());
+          const root = fs.realpathSync(path.resolve(workspace, process.env.PROJECT_ROOT || '.'));
+          if (root !== workspace && !root.startsWith(workspace + path.sep)) throw Error('Project root leaves repository');
+          if (!/^[a-f0-9-]{36}$/.test(process.env.DEPLOYMENT_ID)) throw Error('Invalid deployment identity');
+          const run = args => { const r = spawnSync('npm', args, {cwd:root,stdio:'inherit',timeout:480000}); if (r.status !== 0) throw Error('Build failed'); };
+          let compiled = false;
+          if (fs.existsSync(path.join(root,'package.json'))) {
+            const pkg = JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
+            if (pkg.scripts?.build) {
+              if (!fs.existsSync(path.join(root,'package-lock.json'))) throw Error('Commit package-lock.json for reproducible npm builds');
+              run(['ci','--no-audit','--no-fund']);
+              run(['run','build']);
+              compiled = true;
+            }
+          }
+          const candidates = compiled ? ['dist','out','build'] : ['.','public'];
+          const selected = candidates.find(dir => fs.existsSync(path.join(root,dir,'index.html')));
+          if (!selected) throw Error('No static index.html output found. SSR/Node servers are not supported.');
+          const output = fs.realpathSync(path.join(root,selected));
+          if (output !== root && !output.startsWith(root+path.sep)) throw Error('Output leaves project');
+          const extensions = new Set(['html','css','js','mjs','json','txt','xml','svg','png','jpg','jpeg','gif','webp','avif','ico','woff','woff2','ttf','otf','eot','pdf','webmanifest']);
+          const files = []; let bytes = 0;
+          function walk(dir) {
+            for (const entry of fs.readdirSync(dir,{withFileTypes:true})) {
+              if (entry.name.startsWith('.') || entry.name==='node_modules') continue;
+              const full = path.join(dir,entry.name);
+              if (entry.isSymbolicLink()) throw Error('Symbolic links cannot be published');
+              if (entry.isDirectory()) {walk(full);continue;}
+              const name = path.relative(output,full).split(path.sep).join('/');
+              if (!extensions.has(name.split('.').pop().toLowerCase())) continue;
+              if (/[\\%?#\x00-\x1f]/.test(name)) throw Error('Unsupported asset path');
+              const size = fs.statSync(full).size;
+              bytes += size;
+              if (size>5*1024*1024 || bytes>20*1024*1024 || files.length>=500) throw Error('Static site exceeds hosting limits');
+              const body = fs.readFileSync(full);
+              files.push({path:name,base64:body.toString('base64'),sha256:crypto.createHash('sha256').update(body).digest('hex')});
+            }
+          }
+          walk(output);
+          const artifact = path.join(process.env.RUNNER_TEMP,'agent-deploy-artifact');
+          fs.mkdirSync(artifact,{recursive:true});
+          fs.writeFileSync(path.join(artifact,'release.json'),JSON.stringify({mode:compiled?'spa':'static',files}));
+          console.log(`Packaged ${files.length} files (${bytes} bytes)`);
+          NODE
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: agent-deploy-${{ inputs.deployment_id }}
+          path: ${{ runner.temp }}/agent-deploy-artifact/release.json
+          if-no-files-found: error
+          retention-days: 1
