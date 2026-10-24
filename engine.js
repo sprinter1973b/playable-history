@@ -39,7 +39,7 @@ function tourStop(i){const R=S.route,r=R[i];ga('stop_view',{stop_id:r.stop,stop_
  <p class="stop">${esc(r.address)} · <a href="${esc(gm(r))}" target="_blank" rel="noopener">Open in Google Maps</a></p>
  <div class="fact"><strong>True history:</strong> ${esc(r.blurb)}<div class="meta">${src(r.sources)}</div></div>
  ${q?`<div class="quiz"><p><strong>${esc(q.q)}</strong></p>${q.options.map((o,k)=>`<button data-q="${k}">${esc(o)}</button>`).join('')}<p class="meta" id="qr" aria-live="polite"></p></div>`:''}
- ${c?`<button id="play" class="primary">▶ Play this stop's story${mem().includes(String(r.stop))?' ✓':''}</button>`:''}${sc?`<button id="depot">🚂 Play the full depot story from here</button>`:''}${memLine()}
+ ${c?`<button id="play" class="primary">▶ Play this stop's story${mem().includes(String(r.stop))?' ✓':''}</button>`:''}${sc?`<button id="depot">🚂 Continue the main story: ${esc((S.scenes[sc]||{}).title||'from here')}</button>`:''}${memLine()}
  <div class="top">${i>0?`<button id="prev">← Stop ${R[i-1].stop}</button>`:''}<span style="flex:1"></span>${i<R.length-1?`<button id="next" class="primary">Walk on to stop ${R[i+1].stop} →</button>`:`<button id="tl2" class="primary">Tour complete ✓</button>`}</div>${foot()}`;
  const g=id=>document.getElementById(id);
  g('tl').onclick=map;if(g('tl2'))g('tl2').onclick=map;if(g('prev'))g('prev').onclick=()=>tourStop(i-1);if(g('next'))g('next').onclick=()=>tourStop(i+1);

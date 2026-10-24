@@ -41,7 +41,7 @@ story={
  "intro":"It is the 1890s. You are Ada Pruitt, 16, whose family farms cotton outside Woodstock. Make up to five choices and see how the railroad shaped the town you know today. About 5 minutes.",
  "characterNote":"Ada Pruitt and her family are fictional composite characters. Places, dates and events marked “True history” come from the cited sources.",
  "cta":{"label":"Learn more: walk Downtown Woodstock with History Cherokee","url":"https://www.historycherokee.org/"},
- "credits":"Story illustrations: original simple SVG drawings. Tour-stop photos and story by John Thomas, Living in Woodstock GA."},
+ "credits":"Story illustrations: original simple SVG drawings. Tour-stop photos and story by John B Thomas Jr, Living in Woodstock GA."},
 "images":I,"sources":SRC,"start":"s1",
 "route":[
  {"stop":12,"name":"Cotton Warehouse","address":"105 Towne Lake Pkwy. (formerly Church St.)","maps":"105 Towne Lake Pkwy, Woodstock, GA 30188"},
