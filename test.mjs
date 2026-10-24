@@ -11,8 +11,17 @@ const stops=new Set((S.route||[]).map(r=>r.stop));for(const[id,n]of Object.entri
  if(r.quiz&&!(r.quiz.options&&r.quiz.options[r.quiz.answer]))err.push('route '+r.stop+': bad quiz');
  if(r.photo&&!(r.photo.src&&fs.existsSync(r.photo.src)))err.push('route '+r.stop+': photo file missing '+(r.photo&&r.photo.src));});
 if(S.route&&S.route.length!==25)err.push('expected 25 tour stops, got '+S.route.length);
-const paths=[];(function walk(id,p,seen){if(seen.has(id)){err.push('loop at '+id);return}const n=all[id];if(S.endings[id]){paths.push([...p,id]);return}
- n.choices.forEach(c=>walk(c.next,[...p,id],new Set([...seen,id])))})(S.start,[],new Set());
+const paths=[];function walk(id,p,seen){if(seen.has(id)){err.push('loop at '+id);return}const n=all[id];if(S.endings[id]){paths.push([...p,id]);return}
+ n.choices.forEach(c=>walk(c.next,[...p,id],new Set([...seen,id])))}
+walk(S.start,[],new Set());
+const CH=S.chapters||{};if(Object.keys(CH).length!==25)err.push('expected 25 chapters, got '+Object.keys(CH).length);
+for(const[k,c]of Object.entries(CH)){const before=paths.length;walk(c.start,[],new Set());const ps=paths.slice(before);
+ if(ps.some(p=>all[p.at(-1)].chapter!==+k))err.push('chapter '+k+' ends outside its stop');
+ const sc=new Set(ps.flat().filter(x=>S.scenes[x]));if(sc.size<2||sc.size>4)err.push('chapter '+k+' has '+sc.size+' scenes');
+ sc.forEach(x=>{const n=S.scenes[x].choices.length;if(n<2||n>3)err.push(x+': '+n+' choices');if(S.scenes[x].stop!==+k)err.push(x+': wrong stop')});
+ if(!all[ps[0].at(-1)].history?.length)err.push('chapter '+k+' no true history');
+ if(c.depotScene&&!S.scenes[c.depotScene])err.push('chapter '+k+' bad depotScene');}
+if(S.finale&&!(S.finale.title&&S.images[S.finale.image]))err.push('bad finale');
 const reached=new Set(paths.flat());Object.keys(all).forEach(k=>reached.has(k)||err.push('unreachable '+k));
-console.log(JSON.stringify({stops:(S.route||[]).length,paths:paths.map(p=>p.join('>')),endings:[...new Set(paths.map(p=>p.at(-1)))],errors:err},null,1));
+console.log(JSON.stringify({stops:(S.route||[]).length,chapters:Object.keys(CH).length,pathCount:paths.length,paths:paths.map(p=>p.join('>')),endings:[...new Set(paths.map(p=>p.at(-1)))],errors:err},null,1));
 if(err.length)process.exit(1);

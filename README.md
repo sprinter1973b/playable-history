@@ -40,3 +40,6 @@ Use only photos you took or have written permission to use (for example from His
 3. Run `pip install pillow` (once), then `python3 add_photos.py <folder> --credit "John Thomas"`. Each photo is resized to 1200px wide, compressed to about 150 KB, saved as `images/<stop>.jpg`, and linked in `stories/woodstock.json` (`route[].photo` = `{src, alt, caption, credit}`).
 4. Run `node test.mjs` (it checks every photo file exists), then upload `images/` and `stories/woodstock.json` to GitHub.
 A stop with no photo, or whose file is missing, simply shows no picture.
+
+## Stop stories (v4)
+Every one of the 25 tour stops has its own short playable chapter (3 scenes, 2 choices each, ending in a "True history" note from the brochure). Chapter text lives in `chapters.py`; `build_story.py` turns it into `scenes`/`endings` (ids `c<stop>_a`, `c<stop>_b0/b1`, `c<stop>_end`) plus a `chapters` map in the story JSON. Characters (Ada Pruitt, her niece Clara, and family) are fictional; real people appear only in factual narration. Each tour stop has a "Play this stop's story" button; finishing a chapter saves a memory in the player's memory book (stored in the browser) and offers "Walk on to stop N". With all 25 saved, the "Memory Book Is Full" final ending opens. The original depot story is unchanged and can still be started from stops 12, 16, 17, 18 and 25.

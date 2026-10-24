@@ -10,7 +10,16 @@ cotton='<rect x="200" y="125" width="40" height="30" fill="#efe8da" stroke="#8a6
 store='<rect x="40" y="70" width="240" height="85" fill="#9c5b3b"/><rect x="40" y="62" width="240" height="14" fill="#5a3a2a"/><text x="160" y="73" font-size="10" text-anchor="middle" fill="#f3e6c8" font-family="Georgia">GENERAL MERCHANDISE · COTTON</text>'+''.join(f'<rect x="{x}" y="95" width="30" height="40" fill="#f3e6c8"/>' for x in (60,110,180,230))+'<rect x="145" y="105" width="30" height="50" fill="#3b2f2a"/>'
 charter='<rect x="95" y="40" width="130" height="150" fill="#f8f1e0" stroke="#8a6a45" stroke-width="3"/><text x="160" y="70" font-size="13" text-anchor="middle" font-family="Georgia" fill="#2b2420">CHARTER</text><text x="160" y="90" font-size="10" text-anchor="middle" font-family="Georgia" fill="#2b2420">Town of Woodstock</text><text x="160" y="106" font-size="10" text-anchor="middle" font-family="Georgia" fill="#2b2420">Dec. 8, 1897</text>'+''.join(f'<rect x="110" y="{y}" width="100" height="3" fill="#c9b893"/>' for y in range(120,175,10))
 mill='<rect x="0" y="140" width="320" height="22" fill="#4f7a8c"/><rect x="70" y="80" width="120" height="62" fill="#8c8c80"/><rect x="85" y="95" width="15" height="15" fill="#3b2f2a"/><rect x="120" y="95" width="15" height="15" fill="#3b2f2a"/><rect x="155" y="95" width="15" height="15" fill="#3b2f2a"/><circle cx="205" cy="125" r="22" fill="none" stroke="#5a4030" stroke-width="5"/>'
+house='<rect x="90" y="85" width="140" height="70" fill="#f3e6c8" stroke="#5a4030" stroke-width="2"/><polygon points="80,88 240,88 160,45" fill="#6b4a2f"/><rect x="70" y="115" width="180" height="6" fill="#5a4030"/>'+''.join(f'<rect x="{x}" y="121" width="5" height="34" fill="#5a4030"/>' for x in (75,125,190,240))+'<rect x="150" y="125" width="20" height="30" fill="#3b2f2a"/><rect x="105" y="95" width="18" height="16" fill="#9fb8c8"/><rect x="197" y="95" width="18" height="16" fill="#9fb8c8"/>'
+church='<rect x="100" y="85" width="120" height="70" fill="#f3e6c8" stroke="#5a4030" stroke-width="2"/><polygon points="92,88 228,88 160,55" fill="#6b4a2f"/><rect x="145" y="45" width="30" height="45" fill="#efe8da" stroke="#5a4030"/><polygon points="140,47 180,47 160,15" fill="#6b4a2f"/><path d="M118 135v-25a8 8 0 0116 0v25zM186 135v-25a8 8 0 0116 0v25z" fill="#c98a3b"/><rect x="150" y="120" width="20" height="35" fill="#3b2f2a"/>'
+school='<rect x="40" y="90" width="240" height="65" fill="#9c5b3b"/><polygon points="30,92 290,92 160,62" fill="#4a3a33"/><rect x="148" y="40" width="24" height="26" fill="#efe8da"/><circle cx="160" cy="55" r="6" fill="#c98a3b"/>'+''.join(f'<rect x="{x}" y="105" width="20" height="24" fill="#f3e6c8"/>' for x in (60,95,200,235))+'<rect x="148" y="115" width="24" height="40" fill="#3b2f2a"/>'
+bank='<rect x="80" y="60" width="160" height="95" fill="#d9b36a"/><rect x="80" y="55" width="160" height="12" fill="#a7823f"/><text x="160" y="85" font-size="14" text-anchor="middle" font-family="Georgia" fill="#3b2f2a">BANK</text><rect x="100" y="95" width="25" height="40" fill="#f3e6c8"/><rect x="195" y="95" width="25" height="40" fill="#f3e6c8"/><rect x="147" y="100" width="26" height="55" fill="#3b2f2a"/>'
 I={
+ "house":{"alt":"Simple drawing of a historic house with a front porch","svg":svg(house)},
+ "church":{"alt":"Simple drawing of a small historic church with arched windows","svg":svg(church)},
+ "school":{"alt":"Simple drawing of a brick schoolhouse with a bell cupola","svg":svg(school)},
+ "bank":{"alt":"Simple drawing of a small golden-brick bank building","svg":svg(bank)},
+ "book":{"alt":"Simple drawing of an open memory book","svg":svg('<rect x="70" y="60" width="90" height="100" fill="#f8f1e0" stroke="#8a6a45" stroke-width="3"/><rect x="160" y="60" width="90" height="100" fill="#f8f1e0" stroke="#8a6a45" stroke-width="3"/>'+''.join(f'<rect x="85" y="{y}" width="60" height="3" fill="#c9b893"/><rect x="175" y="{y}" width="60" height="3" fill="#c9b893"/>' for y in range(80,150,12)))},
  "cover":{"alt":"Simple drawing of a steam train arriving beside a brick depot with cotton bales","svg":svg(rails+train+depot)},
  "depot":{"alt":"Simple drawing of a small depot by the tracks with cotton bales waiting","svg":svg(rails+depot+cotton)},
  "store":{"alt":"Simple drawing of a Main Street general store selling merchandise and buying cotton","svg":svg(store)},
@@ -28,11 +37,11 @@ SRC=[
  {"id":"city125","title":"City of Woodstock – Celebrates 125 Years","url":"https://www.woodstockga.gov/news_detail_T15_R70.php"}]
 story={
 "schemaVersion":1,
-"meta":{"title":"The Depot at the Center of Town","museum":"Demo · Downtown Woodstock, GA","expectedSteps":5,"coverImage":"cover",
+"meta":{"title":"The Depot at the Center of Town","museum":"Downtown Woodstock, GA","expectedSteps":5,"coverImage":"cover",
  "intro":"It is the 1890s. You are Ada Pruitt, 16, whose family farms cotton outside Woodstock. Make up to five choices and see how the railroad shaped the town you know today. About 5 minutes.",
  "characterNote":"Ada Pruitt and her family are fictional composite characters. Places, dates and events marked “True history” come from the cited sources.",
  "cta":{"label":"Learn more: walk Downtown Woodstock with History Cherokee","url":"https://www.historycherokee.org/"},
- "credits":"Illustrations: original simple SVG drawings made for this demo (no outside images used; free to reuse). Demo story by John Thomas, Living in Woodstock GA."},
+ "credits":"Story illustrations: original simple SVG drawings. Tour-stop photos and story by John Thomas, Living in Woodstock GA."},
 "images":I,"sources":SRC,"start":"s1",
 "route":[
  {"stop":12,"name":"Cotton Warehouse","address":"105 Towne Lake Pkwy. (formerly Church St.)","maps":"105 Towne Lake Pkwy, Woodstock, GA 30188"},
@@ -82,5 +91,20 @@ old={}
 if os.path.exists('stories/woodstock.json'):
     old={r['stop']:r.get('photo') for r in json.load(open('stories/woodstock.json')).get('route',[])}
 story['route']=tour_route()
+from chapters import C as CH
+DEPOT={12:'s_wh',16:'s_wh',17:'s1',18:'s2b',25:'s4m'}
+story['chapters']={}
+for n,img,title,when,intro,prompt,br,keep in CH:
+    p=f'c{n}_';e=p+'end'
+    story['scenes'][p+'a']={"title":title,"when":when,"image":img,"stop":n,"text":intro,"prompt":prompt,
+        "choices":[{"label":br[i][0],"next":p+'b'+str(i)} for i in range(2)]}
+    for i,(lab,t,txt,ch) in enumerate(br):
+        story['scenes'][p+'b'+str(i)]={"title":t,"when":when,"image":img,"stop":n,"text":[txt],"choices":[{"label":c,"next":e} for c in ch]}
+    r=next(x for x in story['route'] if x['stop']==n)
+    story['endings'][e]={"title":"Memory saved: "+keep,"image":img,"chapter":n,
+        "text":[f"You add a new memory to the book you carry along the tour: {keep}."],"history":[r['blurb']],"sources":["brochure"]}
+    story['chapters'][str(n)]={"title":title,"start":p+'a',"keepsake":keep,"steps":2}
+    if n in DEPOT: story['chapters'][str(n)]["depotScene"]=DEPOT[n]
+story['finale']={"title":"The Memory Book Is Full","image":"book","text":["You have walked all 25 stops of Historic Downtown Woodstock and saved a memory at each one, from a cotton receipt to a piece of rope from the mill on Little River.","The characters were fictional, but every building and date you met is real. Most of them are still standing, a short walk from the depot at the center of town."],"cta":{"label":"Plan a visit: Woodstock Visitors Center, 8588 Main St.","url":"https://www.visitwoodstockga.com/"}}
 for r in story['route']: r['photo']=old.get(r['stop'])
 json.dump(story,open('stories/woodstock.json','w'),indent=1,ensure_ascii=False)
