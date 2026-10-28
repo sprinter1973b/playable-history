@@ -14,6 +14,7 @@ function stopLine(n){const r=stop(n);if(!r)return'';return `<p class="stop"><spa
 function mapBtn(){return (S.route||[]).length?`<button id="map">🗺 Walking Tour: all ${S.route.length} stops</button>`:''}
 function photo(r){const p=r.photo;if(!p||!p.src)return'';
  return `<figure class="photo"><img src="${esc(p.src)}" alt="${esc(p.alt||r.name)}" loading="lazy" onerror="this.parentNode.remove()">${p.caption||p.credit?`<figcaption>${esc(p.caption||'')}${p.credit?` <span class="meta">Photo: ${esc(p.credit)}</span>`:''}</figcaption>`:''}</figure>`;}
+function photoFor(n){const r=n&&stop(+n);return r?photo(r):'';}
 function sceneFor(n){return CH()[n]&&CH()[n].depotScene;}
 let back=null,chap=null;
 const MK='ph-memories';const mem=()=>{try{return JSON.parse(localStorage.getItem(MK)||'[]')}catch(e){return[]}};
@@ -58,7 +59,7 @@ function start(){pv('Start','start');steps=0;path=[];cur=null;chap=null;const m=
  document.getElementById('go').onclick=()=>{ga('game_start');show(S.start);};const f=document.getElementById('fin');if(f)f.onclick=finale;app.querySelector('h1').focus?.();}
 function show(id){cur=id;const n=S.scenes[id]||S.endings[id];if(!n){app.innerHTML='<p>Story error: missing "'+esc(id)+'"</p>';return;}
  if(S.endings[id])return end(n);
- app.innerHTML=`${top()}${art(n.image)}<p class="meta">${esc(n.when||'')}</p><h2 tabindex="-1">${esc(n.title)}</h2>${stopLine(n.stop)}${n.text.map(p=>`<p>${esc(p)}</p>`).join('')}
+ app.innerHTML=`${top()}${art(n.image)}${photoFor(n.stop||chap)}<p class="meta">${esc(n.when||'')}</p><h2 tabindex="-1">${esc(n.title)}</h2>${stopLine(n.stop)}${n.text.map(p=>`<p>${esc(p)}</p>`).join('')}
  ${n.fact?`<div class="fact"><strong>True history:</strong> ${esc(n.fact)}<div class="meta">${src(n.sources)}</div></div>`:''}
  <p><strong>${esc(n.prompt||'What do you do?')}</strong></p>${n.choices.map((c,i)=>`<button data-i="${i}">${esc(c.label)}</button>`).join('')}${mapBtn()}`;
  bind();app.querySelectorAll('button[data-i]').forEach(b=>b.onclick=()=>{const c=n.choices[+b.dataset.i];ga('choice_made',{chapter_number:chap||'main',scene_id:String(id),choice_index:+b.dataset.i});steps++;path.push(c.label);show(c.next);});
@@ -68,7 +69,7 @@ function pv(t,path){ga('page_view',{page_title:t,page_location:location.origin+l
 function prog(){try{const tot=Object.keys(CH()).length,d=mem().filter(x=>CH()[x]).length,pc=tot?Math.floor(d*100/tot):0,k='ph-ga-ms';const done=JSON.parse(localStorage.getItem(k)||'[]');[25,50,75,100].forEach(m=>{if(pc>=m&&!done.includes(m)){done.push(m);ga('progress_milestone',{percent:m,chapters_done:d});}});localStorage.setItem(k,JSON.stringify(done));}catch(_){}}
 function chapEnd(n){ga('chapter_complete',{chapter_number:n.chapter,chapter_title:String(n.title||'').slice(0,90)});pv('Chapter '+n.chapter+' complete','chapter/'+n.chapter+'/complete');setTimeout(prog,0);const R=S.route,i=R.findIndex(r=>r.stop===n.chapter),nx=R[i+1];save(String(n.chapter));chap=null;
  const m=mem().filter(x=>CH()[x]).length,all=m>=Object.keys(CH()).length;
- app.innerHTML=`${art(n.image)}<span class="tag">Stop ${n.chapter} story complete</span><h2 tabindex="-1">${esc(n.title)}</h2>${n.text.map(p=>`<p>${esc(p)}</p>`).join('')}
+ app.innerHTML=`${art(n.image)}${photoFor(n.chapter)}<span class="tag">Stop ${n.chapter} story complete</span><h2 tabindex="-1">${esc(n.title)}</h2>${n.text.map(p=>`<p>${esc(p)}</p>`).join('')}
  <div class="fact"><strong>True history:</strong>${n.history.map(p=>`<p>${esc(p)}</p>`).join('')}<div class="meta">${src(n.sources)}</div></div>${memLine()}
  ${all&&S.finale?'<button id="fin" class="primary">📖 All 25 memories saved! Open your memory book</button>':''}
  ${nx?`<button id="walk" class="${all?'':'primary'}">Walk on to stop ${nx.stop}: ${esc(nx.name)} →</button>`:''}
